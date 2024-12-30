@@ -2,16 +2,33 @@ import React, { useState } from 'react';
 
 function OrderForm({ onSubmit, products }) {
   const [formData, setFormData] = useState({ product_id: '', quantity: '' });
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    if (name === 'product_id') {
+      const product = products.find(p => p.pk === value);
+      setSelectedProduct(product);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const totals = calculateTotal();
+    if (totals) {
+      onSubmit({ ...formData, ...totals });
+    }
     setFormData({ product_id: '', quantity: '' });
+    setSelectedProduct(null);
+  };
+
+  const calculateTotal = () => {
+    if (!selectedProduct || !formData.quantity) return null;
+    const itemPrice = selectedProduct.price * formData.quantity;
+    const platformFee = itemPrice * 0.05; // 5% platform fee
+    const total = itemPrice + platformFee;
+    return { itemPrice, platformFee, total };
   };
 
   return (
@@ -47,6 +64,20 @@ function OrderForm({ onSubmit, products }) {
           />
         </div>
       </div>
+      {
+        selectedProduct && formData.quantity && (
+        <div className="mt-6 p-4 bg-gray-100 rounded-md">
+          <h4 className="text-lg font-medium text-gray-900 mb-2">Order Summary</h4>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <span>Item Price:</span>
+            <span>${(selectedProduct.price * formData.quantity).toFixed(2)}</span>
+            <span>Platform Fee (10%):</span>
+            <span>${(selectedProduct.price * formData.quantity * 0.1).toFixed(2)}</span>
+            <span className="font-bold">Total Payment:</span>
+            <span className="font-bold">${((selectedProduct.price * formData.quantity) * 1.1).toFixed(2)}</span>
+          </div>
+        </div>
+      )}
       <div className="mt-6">
         <button
           type="submit"

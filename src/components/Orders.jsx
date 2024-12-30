@@ -1,39 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import OrderForm from './OrderForm';
+import axios from 'axios';
+import moment from 'moment';
 
 function Orders() {
   const [orders, setOrders] = useState([]);
   const [showPastOrders, setShowPastOrders] = useState(false);
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    // Fetch products from your API here
-    // For now, we'll use dummy data
-    setProducts([
-      { pk: "01JFZMZ4SH1Z2GP30N7BW8X66B", name: "Executive Chair" },
-      { pk: "02ABCDEFGHIJKLMNOPQRSTUVWX", name: "Conference Table" },
-    ]);
+  const order_url = import.meta.env.VITE_ORDER_ENDPOINT;
+  const product_url = import.meta.env.VITE_PRODUCT_ENDPOINT;
 
-    // Fetch past orders from your API here
-    // For now, we'll use dummy data
-    setOrders([
-      { id: 1, product_id: "01JFZMZ4SH1Z2GP30N7BW8X66B", quantity: 2 },
-      { id: 2, product_id: "02ABCDEFGHIJKLMNOPQRSTUVWX", quantity: 1 },
-    ]);
-  }, []);
+  useEffect(() => {
+    axios.get(`${product_url}/product/all`)
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error('Error fetching products:', err));
+    
+    axios.get(`${order_url}/orders/all`)
+      .then((res) => setOrders(res.data))
+      .catch((err) => console.error('Error fetching orders:', err));
+  }, [showPastOrders]);
 
   const handlePlaceOrder = (orderData) => {
-    // Check if the product exists
     const productExists = products.some(product => product.pk === orderData.product_id);
     if (!productExists) {
       alert('Invalid product ID. Please try again.');
       return;
     }
 
-    // Implement order placement logic here
-    // For now, we'll just add it to the orders array
-    setOrders([...orders, { id: Date.now(), ...orderData }]);
-    alert('Order placed successfully!');
+    axios.post(`${order_url}/orders`, orderData)
+      .then((res) => {
+        setOrders([...orders, res.data]);
+        alert('Order placed successfully!');
+      })
+      .catch((err) => console.error('Error placing order:', err));
   };
 
   return (
@@ -54,19 +54,27 @@ function Orders() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {orders.map(order => (
-                  <tr key={order.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {products.find(p => p.pk === order.product_id)?.name || 'Unknown'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.quantity}</td>
-                  </tr>
+                {orders
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                  .map(order => (
+                    <tr key={order.pk}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.pk}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{moment.utc(order.created_at).local().format('MMMM D, YYYY, h:mm A')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {products.find(p => p.pk === order.product_id)?.name || 'Unknown'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.quantity}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.total}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.status}</td>
+                    </tr>
                 ))}
               </tbody>
             </table>

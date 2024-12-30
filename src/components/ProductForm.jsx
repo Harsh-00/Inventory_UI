@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
-function ProductForm({ onSubmit, initialData }) {
+function ProductForm({ onSubmit, initialData, onCancel }) {
   const [formData, setFormData] = useState({ name: '', price: '', quantity: '' });
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
+      setIsEditing(true);
+    } else {
+      setFormData({ name: '', price: '', quantity: '' });
+      setIsEditing(false);
     }
   }, [initialData]);
 
@@ -18,12 +23,19 @@ function ProductForm({ onSubmit, initialData }) {
     e.preventDefault();
     onSubmit(formData);
     setFormData({ name: '', price: '', quantity: '' });
+    setIsEditing(false);
+  };
+  
+  const handleCancel = () => {
+    setFormData({ name: '', price: '', quantity: '' });
+    setIsEditing(false);
+    onCancel();
   };
 
   return (
     <form onSubmit={handleSubmit} className="bg-blue-50 p-6 border border-blue-100">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">
-        {initialData ? 'Update Product' : 'Add New Product'}
+      <h3 className="text-lg font-medium text-gray-900 mb-4"> 
+        {isEditing ? 'Update Product' : 'Add New Product'}
       </h3>
       <div className="grid grid-cols-1 gap-6">
         <div>
@@ -63,12 +75,21 @@ function ProductForm({ onSubmit, initialData }) {
           />
         </div>
       </div>
-      <div className="mt-6">
+      <div className="mt-6 flex justify-end">
+        {isEditing && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="mr-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 transition-colors duration-200"
+          >
+            Cancel
+          </button>
+        )}
         <button
           type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 transition-colors duration-200"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 transition-colors duration-200"
         >
-          {initialData ? 'Update Product' : 'Add Product'}
+          {isEditing ? 'Submit Update' : 'Add Product'}
         </button>
       </div>
     </form>

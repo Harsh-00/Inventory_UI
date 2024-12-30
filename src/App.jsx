@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Products from './components/Products';
-import Orders from './components/Orders'; 
+import Orders from './components/Orders';
 
 function App() {
   const [activeTab, setActiveTab] = useState('products');
@@ -17,9 +17,7 @@ function App() {
           <div className="flex border-b border-gray-200">
             <button
               className={`px-6 py-4 text-sm font-medium transition-colors duration-200 ${
-                activeTab === 'products'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-blue-600 hover:bg-blue-50'
+                activeTab === 'products' ? 'bg-blue-500 text-white' : 'text-blue-600 hover:bg-blue-50'
               }`}
               onClick={() => setActiveTab('products')}
             >
@@ -27,9 +25,7 @@ function App() {
             </button>
             <button
               className={`px-6 py-4 text-sm font-medium transition-colors duration-200 ${
-                activeTab === 'orders'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-blue-600 hover:bg-blue-50'
+                activeTab === 'orders' ? 'bg-blue-500 text-white' : 'text-blue-600 hover:bg-blue-50'
               }`}
               onClick={() => setActiveTab('orders')}
             >

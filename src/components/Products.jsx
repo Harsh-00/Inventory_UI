@@ -1,41 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import ProductForm from './ProductForm';
+import axios from 'axios';
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
+  const product_url=import.meta.env.VITE_PRODUCT_ENDPOINT;
 
   useEffect(() => {
-    // Fetch products from your API here
-    // For now, we'll use dummy data
-    setProducts([
-      { pk: "01JFZMZ4SH1Z2GP30N7BW8X66B", name: "Executive Chair", price: 300, quantity: 2 },
-      { pk: "02ABCDEFGHIJKLMNOPQRSTUVWX", name: "Conference Table", price: 500, quantity: 1 },
-    ]);
+    axios.get(`${product_url}/product/all`)
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error('Error fetching products:', err));
   }, []);
 
   const handleDelete = (pk) => {
-    // Implement delete logic here
-    setProducts(products.filter(product => product.pk !== pk));
+    axios.delete(`${product_url}/product/${pk}`)
+      .then(() => setProducts(products.filter(product => product.pk !== pk)))
+      .catch((err) => console.error('Error deleting product:', err));
   };
 
   const handleUpdate = (updatedProduct) => {
-    // Implement update logic here
-    setProducts(products.map(product => 
-      product.pk === updatedProduct.pk ? updatedProduct : product
-    ));
-    setEditingProduct(null);
+    axios.put(`${product_url}/product/${updatedProduct.pk}`, updatedProduct)
+      .then(() => {
+        setProducts(products.map(product => 
+          product.pk === updatedProduct.pk ? updatedProduct : product
+        ));
+        setEditingProduct(null);
+      })
+      .catch((err) => console.error('Error updating product:', err));
   };
 
   const handleAdd = (newProduct) => {
-    // Implement add logic here
-    setProducts([...products, { ...newProduct, pk: Date.now().toString() }]);
+    axios.post(`${product_url}/product`, newProduct)
+      .then((res) => setProducts([...products, res.data]))
+      .catch((err) => console.error('Error adding product:', err));
   };
 
   return (
     <div>
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Product Management</h2>
-      <ProductForm onSubmit={editingProduct ? handleUpdate : handleAdd} initialData={editingProduct} />
+      <ProductForm 
+        onSubmit={editingProduct ? handleUpdate : handleAdd} 
+        initialData={editingProduct}
+        onCancel={() => setEditingProduct(null)}
+      />
       <div className="mt-8">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
