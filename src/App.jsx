@@ -9,7 +9,7 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-blue-600 shadow-md">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-semibold text-white">Professional Online Store</h1>
+          <h1 className="text-3xl font-semibold text-white">Generic Inventory</h1>
         </div>
       </header>
       <main className="container mx-auto px-4 py-8">
