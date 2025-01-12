@@ -1,7 +1,6 @@
 # Generic Inventory: Microservices-based Project
 
 **Author**: Harsh Agarwal 
-**Version**: 1.0  
 
 ---
 
@@ -265,9 +264,15 @@ This approach requires manual setup of each part: the UI, Product microservice, 
 ## Local Installation With Docker
 
 This approach uses Docker to containerize each service and optionally uses docker-compose to orchestrate everything. It simplifies the setup significantly.
-> **Note**: Same for both Mac/Linux and Windows Users.
+> **Note**: Same for both Mac/Linux and Windows Users. Ensure Docker Is Installed and Running
 
-0. **Ensure Docker Is Installed and Running**
+0. **Create a Directory**  
+   ```bash
+     mkdir Inventory
+     cd Inventory
+   ```
+   - Follow commands given below.
+   - Always execute commands while being in this directory only, until specified anything else.
    
 1. **Clone the Repositories**  
    ```bash
