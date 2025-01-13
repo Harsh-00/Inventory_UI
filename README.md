@@ -15,7 +15,8 @@
    - [Mac/Linux Steps](#maclinux-steps-for-non-docker-installation)  
    - [Windows Steps](#windows-steps-for-non-docker-installation)  
 7. [Local Installation With Docker](#local-installation-with-docker) 
-8. [Running the Project](#running-the-project)  
+8. [Running the Project](#running-the-project)
+9. [Additional Notes](#additional-notes) 
 
 ---
 
@@ -32,19 +33,29 @@ The goal of this project is to demonstrate:
 
 **This project includes:**
 - A **Product** microservice (manages product inventory).
+  - URL: https://github.com/Harsh-00/Inventory_Product_Microservice
   - Handles product management (adding, updating, fetching, and deleting products).
-  - Uses Redis for data persistence through the redis-om library.
+  - Uses Redis for data persistence through the `redis-om` library.
   - Listens to events via Redis Streams to, for example, update product inventory when an order is processed.
   - Designed with scalability in mind, enabling each service to be updated or scaled independently.
     
 - An **Order** microservice (handles order creation, completes and refunds orders using Redis Streams).
+  - URL: https://github.com/Harsh-00/Inventory_Order_Microservice
   - Responsible for processing customer orders.
   - Verifies product availability by querying the Product Microservice.
   - Uses background tasks and Redis Streams to update order status and trigger inventory updates or refunds.
+  - Ensures event-driven communication for fault-tolerant workflows.
     
 - A **React/Vite** Frontend (UI) that interacts with these services via RESTful APIs.
+  - URL: https://github.com/Harsh-00/Inventory_UI
   - A React application built with Vite that interacts with both microservices.
   - Provides a user interface to manage products and orders, making HTTP requests to the backend services.
+  - Offers an intuitive way for users or admins to view and manipulate data in real-time.
+    
+- A **Deployment Repository** (microservice)
+  - URL: https://github.com/Harsh-00/Inventory_Deployment
+  - Consist of **Docker Compose** configurations for orchestrating multiple containers in a consistent environment.
+  - Streamlines the process, ensuring that all services (Product, Order, and Frontend) can be brought up or scaled with minimal effort.
     
 **Theory Behind the Design:**
 
@@ -55,6 +66,9 @@ The goal of this project is to demonstrate:
   - Messaging via Redis Streams: Event-driven communication between services is achieved using Redis Streams. For example, when an order is completed, an event is published that the Product Microservice listens to in order to update the stock levels accordingly.
 
 - Containerization and Scalability: The project is designed with Docker in mind, making it easy to containerize, test, and deploy. Docker enables the project to run consistently across different environments (local, development, production), while docker-compose allows for managing multi-container setups.
+
+![image](https://github.com/user-attachments/assets/6f89733b-a779-4747-924d-a2d8ed23ff51)
+
 
 ---
 
@@ -312,3 +326,13 @@ This approach uses Docker to containerize each service and optionally uses docke
        - **Add or Update Products** via the Products tab in the UI.
        - **Place Orders** in the Orders tab. This triggers the Order microservice, which in turn updates the Product inventory via Redis Streams.
 ---
+
+## Additional Notes
+
+1. Testing
+   - The Product microservice includes unit and integration tests using pytest. Run tests with:
+     ```bash
+        cd Inventory_Product_Microservice
+        source venv/bin/activate  # or .\venv\Scripts\activate on Windows
+        pytest test_main.py
+      ```
