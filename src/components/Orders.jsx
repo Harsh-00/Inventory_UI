@@ -59,6 +59,7 @@ function Orders() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -69,11 +70,13 @@ function Orders() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.pk}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{moment.utc(order.created_at).local().format('MMMM D, YYYY, h:mm A')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {products.find(p => p.pk === order.product_id)?.name || 'Unknown'}
+                        {products.find(p => p.pk === order.product_id)?.name ||(order?.product_name!==undefined?order.product_name:'Unknown')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.quantity}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.total}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.status}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.message}</td>
+                      
                     </tr>
                 ))}
               </tbody>
